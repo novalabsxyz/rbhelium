@@ -9,6 +9,7 @@ must_have :header, 'ruby.h'
 must_have :func, 'rb_thread_blocking_region'
 must_have :library, 'pthread'
 must_have :library, 'helium'
+must_have :library, 'uv'
 
 $CFLAGS << ' -O0 -ggdb -Wall'
 
