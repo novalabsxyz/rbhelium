@@ -2,3 +2,4 @@ build
 Makefile
 *.so
 *.o
+mkmf.log

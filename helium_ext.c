@@ -1,14 +1,44 @@
 #include <stdio.h>
 #include <ruby.h>
+#include <ruby/thread.h>
 #include <helium.h>
+#include "helium_ext.h"
 
 static VALUE mHelium;
 static VALUE cConnection;
 
+static pthread_mutex_t g_callback_queue_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t g_callback_cond = PTHREAD_COND_INITIALIZER;
+static struct helium_queued_callback *g_queued_callbacks = NULL;
+
+void add_queued_callback(struct helium_queued_callback *new_callback)
+{
+  new_callback->next = g_queued_callbacks;
+  g_queued_callbacks = new_callback;
+}
+
 void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, char * const message, size_t n)
 {
   printf("In helium_rb_callback");
-  // rb_thread_blocking_region()
+
+  struct helium_queued_callback queued = {
+    .sender_mac = sender_mac,
+    .message = strndup(message, n),
+    .count = n,
+    .mutex = PTHREAD_MUTEX_INITIALIZER,
+    .cond = PTHREAD_COND_INITIALIZER,
+    .next = NULL
+  };
+
+  pthread_mutex_lock(&g_callback_queue_lock);
+  add_queued_callback(&queued);
+  pthread_mutex_unlock(&g_callback_queue_lock);
+
+  pthread_cond_signal(&g_callback_cond);
+
+  pthread_mutex_lock(&queued.mutex);
+  pthread_cond_wait(&queued.cond, &queued.mutex);
+  pthread_mutex_unlock(&queued.mutex);
 }
 
 static VALUE helium_rb_allocate(VALUE klass)
@@ -59,6 +89,41 @@ static VALUE helium_rb_close(VALUE self)
   return Qnil;
 }
 
+static VALUE helium_callback_handler_thread(void *ctx)
+{
+  // struct helium_callback_list *callbacks = (struct helium_callback_list *)ctx;
+
+  return Qnil;
+}
+
+static void wait_for_callback(void *ctx)
+{
+  
+}
+
+static void stop_waiting(void *ctx)
+{
+
+}
+
+static VALUE helium_event_thread(void *unused)
+{
+  struct helium_waiter_t waiter = {
+    .callback = NULL,
+    .abort = false
+  };
+
+  while (waiting.abort == false) {
+    rb_thread_call_without_gvl(wait_for_callback, &waiter, &stop_waiting, &waiter);
+
+    if (waiter.callback != NULL) {
+      rb_thread_create(helium_callback_handler_thread, (void *)waiting.callback);
+    }
+  }
+
+  return Qnil;
+}
+
 void Init_rbhelium()
 {
   mHelium = rb_define_module("Helium");
@@ -67,4 +132,5 @@ void Init_rbhelium()
   rb_define_method(cConnection, "initialize", helium_rb_initialize, -1);
   rb_define_method(cConnection, "send", helium_rb_send, 3);
   rb_define_method(cConnection, "close", helium_rb_close, 0);
+  rb_thread_create(helium_event_thread, NULL);
 }
