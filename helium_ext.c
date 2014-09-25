@@ -17,6 +17,13 @@ void add_queued_callback(struct helium_queued_callback *new_callback)
   g_queued_callbacks = new_callback;
 }
 
+struct helium_queued_callback *pop_queued_callback()
+{
+  struct helium_queued_callback *to_return = g_queued_callbacks;
+  g_queued_callbacks = g_queued_callbacks->next;
+  return to_return;
+}
+
 void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, char * const message, size_t n)
 {
   printf("In helium_rb_callback");
@@ -91,33 +98,53 @@ static VALUE helium_rb_close(VALUE self)
 
 static VALUE helium_callback_handler_thread(void *ctx)
 {
-  // struct helium_callback_list *callbacks = (struct helium_callback_list *)ctx;
+  struct helium_queued_callback *callback = (struct helium_queued_callback *)ctx;
 
-  return Qnil;
+  VALUE rb_mac = ULL2NUM((unsigned long long)callback->sender_mac);
+  VALUE rb_message = rb_str_new(callback->message, callback->count);
+
+  VALUE result = rb_funcall(callback->proc, rb_intern("call"), 2, rb_mac, rb_message);
+
+  return result;
 }
 
-static void wait_for_callback(void *ctx)
+static void *wait_for_callback(void *ctx)
 {
-  
+  struct helium_waiter_t *waiter = (struct helium_waiter_t *)ctx;
+
+  pthread_mutex_lock(&g_callback_queue_lock);
+
+  while((waiter->abort == 0) &&
+        (waiter->callback = pop_queued_callback()) == NULL) {
+    // TODO: that condition sucks
+    pthread_cond_wait(&g_callback_cond, &g_callback_queue_lock);
+  }
+
+  pthread_mutex_unlock(&g_callback_queue_lock);
+  return NULL;
 }
 
 static void stop_waiting(void *ctx)
 {
-
+  struct helium_waiter_t *waiter = (struct helium_waiter_t *)ctx;
+  pthread_mutex_lock(&g_callback_queue_lock);
+  waiter->abort = 1;
+  pthread_cond_signal(&g_callback_cond);
+  pthread_mutex_unlock(&g_callback_queue_lock);
 }
 
 static VALUE helium_event_thread(void *unused)
 {
   struct helium_waiter_t waiter = {
     .callback = NULL,
-    .abort = false
+    .abort = 0
   };
 
-  while (waiting.abort == false) {
+  while (waiter.abort == 0) {
     rb_thread_call_without_gvl(wait_for_callback, &waiter, &stop_waiting, &waiter);
 
     if (waiter.callback != NULL) {
-      rb_thread_create(helium_callback_handler_thread, (void *)waiting.callback);
+      rb_thread_create(helium_callback_handler_thread, (void *)waiter.callback);
     }
   }
 
