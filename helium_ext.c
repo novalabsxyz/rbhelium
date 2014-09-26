@@ -3,6 +3,8 @@
 #include <ruby/thread.h>
 #include <helium.h>
 #include "helium_ext.h"
+#include <assert.h>
+
 
 static VALUE mHelium;
 static VALUE cConnection;
@@ -28,21 +30,22 @@ struct helium_queued_callback *pop_queued_callback()
 
 void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, char * const message, size_t n)
 {
-  printf("In helium_rb_callback");
-
   struct helium_queued_callback queued = {
     .sender_mac = sender_mac,
     .message = strndup(message, n),
     .count = n,
+    .proc = Qnil,
     .mutex = PTHREAD_MUTEX_INITIALIZER,
     .cond = PTHREAD_COND_INITIALIZER,
     .next = NULL
   };
 
+  queued.proc = (VALUE)helium_get_user_context(conn);
+
   pthread_mutex_lock(&g_callback_queue_lock);
   add_queued_callback(&queued);
   pthread_mutex_unlock(&g_callback_queue_lock);
-
+  
   pthread_cond_signal(&g_callback_cond);
 
   pthread_mutex_lock(&queued.mutex);
@@ -65,6 +68,8 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
+  assert(block != Qnil);
+  helium_set_user_context(conn, (void *)block);
 
   helium_init(conn, NULL, helium_rb_callback);
 
@@ -73,7 +78,6 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
-  fprintf(stderr, "in helium_rb_send, guys!!\n");
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
   
@@ -106,8 +110,12 @@ static VALUE helium_callback_handler_thread(void *ctx)
 
   VALUE rb_mac = ULL2NUM((unsigned long long)callback->sender_mac);
   VALUE rb_message = rb_str_new(callback->message, callback->count);
-
+  
   VALUE result = rb_funcall(callback->proc, rb_intern("call"), 2, rb_mac, rb_message);
+
+  pthread_mutex_lock(&callback->mutex);
+  pthread_cond_signal(&callback->cond);
+  pthread_mutex_unlock(&callback->mutex);
 
   return result;
 }
