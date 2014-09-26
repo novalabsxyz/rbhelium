@@ -15,8 +15,10 @@ static struct helium_queued_callback *g_queued_callbacks = NULL;
 
 void add_queued_callback(struct helium_queued_callback *new_callback)
 {
+  pthread_mutex_lock(&g_callback_queue_lock);
   new_callback->next = g_queued_callbacks;
   g_queued_callbacks = new_callback;
+  pthread_mutex_unlock(&g_callback_queue_lock);
 }
 
 struct helium_queued_callback *pop_queued_callback()
@@ -42,9 +44,8 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
 
   queued.proc = (VALUE)helium_get_user_context(conn);
 
-  pthread_mutex_lock(&g_callback_queue_lock);
+
   add_queued_callback(&queued);
-  pthread_mutex_unlock(&g_callback_queue_lock);
   
   pthread_cond_signal(&g_callback_cond);
 
@@ -60,18 +61,22 @@ static VALUE helium_rb_allocate(VALUE klass)
 
 static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 {
-  VALUE proxy_addr = Qnil;
+  VALUE rb_proxy_addr = Qnil;
   VALUE block = Qnil;
   rb_need_block();
 
-  rb_scan_args(argc, argv, "01&", &proxy_addr, &block);
+  rb_scan_args(argc, argv, "01&", &rb_proxy_addr, &block);
+
+  char *proxy_addr = NULL;
+  if (!NIL_P(rb_proxy_addr)) {
+    proxy_addr = StringValuePtr(rb_proxy_addr);
+  }
 
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
-  assert(block != Qnil);
-  helium_set_user_context(conn, (void *)block);
+  helium_set_user_context(cocn, (void *)block);
 
-  helium_init(conn, NULL, helium_rb_callback);
+  helium_init(conn, proxy_addr, helium_rb_callback);
 
   return self;
 }
