@@ -82,6 +82,21 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
   return self;
 }
 
+static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
+{
+  helium_connection_t *conn = NULL;
+  Data_Get_Struct(self, helium_connection_t, conn);
+
+  uint64_t mac = (uint64_t)NUM2ULL(rb_mac);
+  char *token_p = StringValuePtr(rb_token);
+
+  helium_token_t token;
+  memcpy(token, token_p, sizeof(helium_token_t));
+
+  int result = helium_subscribe(conn, mac, token);
+  return INT2FIX(result);
+}
+
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
   helium_connection_t *conn = NULL;
@@ -176,6 +191,7 @@ void Init_rbhelium()
   rb_define_alloc_func(cConnection, helium_rb_allocate);
   rb_define_method(cConnection, "initialize", helium_rb_initialize, -1);
   rb_define_method(cConnection, "send", helium_rb_send, 3);
+  rb_define_method(cConnection, "subscribe", helium_rb_subscribe, 2);
   rb_define_method(cConnection, "close", helium_rb_close, 0);
   rb_thread_create(helium_event_thread, NULL);
 }

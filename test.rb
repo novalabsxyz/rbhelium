@@ -7,7 +7,10 @@ conn = Helium::Connection.new do |datums|
   puts "Got data #{datums}"
 end
 
-result = conn.send(0x0000112233440001, token, "s")
-puts "send result is #{result}"
+puts "subscribing..."
+
+status = conn.subscribe(0x0000112233440001, token)
+
+puts "status: #{status}"
 
 sleep 15
