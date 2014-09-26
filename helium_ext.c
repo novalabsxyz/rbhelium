@@ -20,7 +20,9 @@ void add_queued_callback(struct helium_queued_callback *new_callback)
 struct helium_queued_callback *pop_queued_callback()
 {
   struct helium_queued_callback *to_return = g_queued_callbacks;
-  g_queued_callbacks = g_queued_callbacks->next;
+  if (g_queued_callbacks) {
+    g_queued_callbacks = g_queued_callbacks->next;
+  }
   return to_return;
 }
 
@@ -71,6 +73,7 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
+  fprintf(stderr, "in helium_rb_send, guys!!\n");
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
   
@@ -82,9 +85,10 @@ static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_m
   memcpy(token, token_p, sizeof(helium_token_t));
   
   size_t msg_len = strlen(msg);
-  helium_send(conn, mac, token, (unsigned char*)msg, msg_len);
+  int result = helium_send(conn, mac, token, (unsigned char*)msg, msg_len);
+
   
-  return Qnil;
+  return INT2FIX(result);
 }
 
 static VALUE helium_rb_close(VALUE self)
