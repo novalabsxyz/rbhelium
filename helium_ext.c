@@ -42,7 +42,7 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
     .next = NULL
   };
 
-  queued.proc = (VALUE)helium_get_user_context(conn);
+  queued.proc = (VALUE)helium_get_context(conn);
 
 
   add_queued_callback(&queued);
@@ -74,9 +74,10 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
-  helium_set_user_context(cocn, (void *)block);
+  RB_GC_GUARD(block);
+  helium_set_context(conn, (void *)block);
 
-  helium_init(conn, proxy_addr, helium_rb_callback);
+  helium_open(conn, proxy_addr, helium_rb_callback);
 
   return self;
 }
