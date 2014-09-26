@@ -36,14 +36,10 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
     .sender_mac = sender_mac,
     .message = strndup(message, n),
     .count = n,
-    .proc = Qnil,
     .mutex = PTHREAD_MUTEX_INITIALIZER,
     .cond = PTHREAD_COND_INITIALIZER,
     .next = NULL
   };
-
-  queued.proc = (VALUE)helium_get_context(conn);
-
 
   add_queued_callback(&queued);
   
@@ -131,8 +127,9 @@ static VALUE helium_callback_handler_thread(void *ctx)
 
   VALUE rb_mac = ULL2NUM((unsigned long long)callback->sender_mac);
   VALUE rb_message = rb_str_new(callback->message, callback->count);
-  
-  VALUE result = rb_funcall(callback->proc, rb_intern("call"), 2, rb_mac, rb_message);
+
+  VALUE proc = (VALUE)helium_get_context(callback->conn);
+  VALUE result = rb_funcall(proc, rb_intern("call"), 2, rb_mac, rb_message);
 
   pthread_mutex_lock(&callback->mutex);
   pthread_cond_signal(&callback->cond);
