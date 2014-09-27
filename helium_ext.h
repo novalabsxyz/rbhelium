@@ -8,6 +8,7 @@ struct helium_queued_callback {
   uint64_t sender_mac;
   char *message;
   size_t count;
+  helium_connection_t *conn;
 
   // TODO: pthread mutexen are notoriously inefficient
   // let's look and see if libuv's are any faster. 

@@ -36,6 +36,7 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
     .sender_mac = sender_mac,
     .message = strndup(message, n),
     .count = n,
+    .conn = (helium_connection_t *)conn,
     .mutex = PTHREAD_MUTEX_INITIALIZER,
     .cond = PTHREAD_COND_INITIALIZER,
     .next = NULL
@@ -44,7 +45,7 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
   add_queued_callback(&queued);
   
   pthread_cond_signal(&g_callback_cond);
-
+  
   pthread_mutex_lock(&queued.mutex);
   pthread_cond_wait(&queued.cond, &queued.mutex);
   pthread_mutex_unlock(&queued.mutex);
@@ -80,6 +81,8 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
 static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 {
+  Check_Type(rb_mac, T_FIXNUM);
+  Check_Type(rb_token, T_STRING);
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
 
@@ -95,6 +98,10 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
+  Check_Type(rb_mac, T_FIXNUM);
+  Check_Type(rb_token, T_STRING);
+  Check_Type(rb_message, T_STRING);
+  
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
   
