@@ -194,7 +194,7 @@ void Init_rbhelium()
   cConnection = rb_define_class_under(mHelium, "Connection", rb_cObject);
   rb_define_alloc_func(cConnection, helium_rb_allocate);
   rb_define_method(cConnection, "initialize", helium_rb_initialize, -1);
-  rb_define_method(cConnection, "send", helium_rb_send, 3);
+  rb_define_method(cConnection, "write", helium_rb_send, 3);
   rb_define_method(cConnection, "subscribe", helium_rb_subscribe, 2);
   rb_define_method(cConnection, "close", helium_rb_close, 0);
   rb_thread_create(helium_event_thread, NULL);
