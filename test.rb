@@ -13,7 +13,7 @@ status = conn.subscribe(0x0000112233440001, token)
 
 puts "status: #{status}"
 
-status = conn.send(0x0000112233440001, token, "dhello, from ruby land")
+status = conn.send(0x0000112233440001, token, "hello, from ruby land")
 
 puts "status: #{status}"
 
