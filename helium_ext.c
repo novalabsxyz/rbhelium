@@ -1,3 +1,9 @@
+/*
+ * Ruby API for the Helium platform.
+ *
+ * Copyright (c) 2014 Helium Systems, Inc.
+ */
+
 #include <stdio.h>
 #include <ruby.h>
 #include <ruby/thread.h>
@@ -56,6 +62,12 @@ static VALUE helium_rb_allocate(VALUE klass)
   return Data_Wrap_Struct(klass, NULL, helium_free, helium_alloc(NULL));
 }
 
+/*
+ * call-seq:
+ *    Helium::Connection.new(proxy=nil) { |mac, str| ... } => Helium::Connection
+ * 
+ * Open a Helium connection, receiving data with the provided block.
+ */
 static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 {
   VALUE rb_proxy_addr = Qnil;
@@ -79,6 +91,15 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
   return self;
 }
 
+/*
+ * call-seq:
+ *    conn.subscribe(mac, token)            => Fixnum
+ * 
+ * Subscribe to messages from a given device specified by the MAC address (as a Fixnum)
+ * and verified with the provided token (a String)
+ * 
+ * Returns an error code, or 0 on success.
+ */
 static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 {
   Check_Type(rb_mac, T_FIXNUM);
@@ -96,6 +117,14 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
   return INT2FIX(result);
 }
 
+/*
+ * call-seq:
+ *    conn.send(mac, token, message)            => Fixnum
+ * 
+ * Sends the provided +message+ to the Helium device specified by +mac+.
+ * 
+ * Returns an error code, or 0 on success.
+ */
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
   Check_Type(rb_mac, T_FIXNUM);
@@ -119,6 +148,12 @@ static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_m
   return INT2FIX(result);
 }
 
+/*
+ * call-seq:
+ *    conn.close()                 => nil
+ *
+ * Closes the connection.
+ */
 static VALUE helium_rb_close(VALUE self)
 {
   helium_connection_t *conn = NULL;
