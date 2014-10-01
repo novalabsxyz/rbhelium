@@ -1,4 +1,4 @@
-require_relative 'rbhelium'
+require_relative '../rbhelium'
 require 'base64'
 require 'minitest/unit'
 require 'minitest/autorun'
