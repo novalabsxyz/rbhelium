@@ -59,7 +59,7 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
 
 static VALUE helium_rb_allocate(VALUE klass)
 {
-  return Data_Wrap_Struct(klass, NULL, helium_free, helium_alloc(NULL));
+  return Data_Wrap_Struct(klass, NULL, helium_free, helium_alloc());
 }
 
 /*
