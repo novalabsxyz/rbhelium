@@ -1,0 +1,20 @@
+PATH
+  remote: .
+  specs:
+    rbhelium (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.3.2)
+    rake-compiler (0.9.3)
+      rake
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.7)
+  rake (~> 10.0)
+  rake-compiler (~> 0.9.3)
+  rbhelium!
