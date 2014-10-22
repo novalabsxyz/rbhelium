@@ -4,3 +4,4 @@ Makefile
 *.o
 mkmf.log
 doc
+.RUBYARCHDIR.*
