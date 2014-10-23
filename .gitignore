@@ -1,0 +1,7 @@
+build
+Makefile
+*.so
+*.o
+mkmf.log
+doc
+.RUBYARCHDIR.*
