@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Rbhelium::VERSION
   spec.authors       = ["Patrick Thomson"]
   spec.email         = ["patrick@helium.co"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = "Ruby API for the Helium platform"
+  spec.description   = "Allows the user to query and subscribe to UDP messages sent over the Helium platform."
+  spec.homepage      = "http://helium.co"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
