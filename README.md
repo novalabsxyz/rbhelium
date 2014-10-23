@@ -22,6 +22,6 @@ conn.subscribe(0x0000112233440001, "magical_helium_token")
 Installation
 ============
 
-0. You'll need libhelium, pthreads, and ruby-devel (for <ruby.h>).
+0. You'll need libhelium, pthreads, and ruby-devel (for `<ruby.h>`).
 1. Run `ruby extconf.rb`.
 2. Run `make`.
