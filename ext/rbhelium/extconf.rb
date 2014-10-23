@@ -15,4 +15,4 @@ must_have :library, 'uv'
 $CFLAGS << ' -O0 -ggdb -Wall'
 $LDFLAGS << ' -Wl,--no-as-needed' # stupid defaults are stupid
 
-create_makefile 'rbhelium'
+create_makefile 'rbhelium/rbhelium'
