@@ -28,7 +28,7 @@ Installation
 ============
 
 0. You'll need libhelium, pthreads, Bundler, and ruby-devel.
-1. `git clone git@github.com:nervcorp/rbhelium ; cd rbhelium`
+1. `git clone git@github.com:helium/rbhelium ; cd rbhelium`
 2. `bundle install`
 
 If you want to install the gem globally:
