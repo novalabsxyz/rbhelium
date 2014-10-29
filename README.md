@@ -21,7 +21,7 @@ end
 conn.subscribe(0x0000112233440001, token)
 
 # Send data to a device
-conn.write(0x0000112233440001, token, "here's data to send)
+conn.write(0x0000112233440001, token, "here's data to send")
 ```
 
 Installation
