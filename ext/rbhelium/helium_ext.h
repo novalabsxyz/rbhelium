@@ -1,4 +1,9 @@
-// Copyright (c) 2014 Helium Systems, Inc.
+/*
+ * Copyright (C) 2014 Helium Systems Inc.
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
 
 #include <pthread.h>
 #include <stdint.h>
@@ -11,7 +16,7 @@ struct helium_queued_callback {
   helium_connection_t *conn;
 
   // TODO: pthread mutexen are notoriously inefficient
-  // let's look and see if libuv's are any faster. 
+  // let's look and see if libuv's are any faster.
   pthread_mutex_t mutex;
   pthread_cond_t cond;
 

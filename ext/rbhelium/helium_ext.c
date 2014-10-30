@@ -1,7 +1,10 @@
 /*
  * Ruby API for the Helium platform.
  *
- * Copyright (c) 2014 Helium Systems, Inc.
+ * Copyright (C) 2014 Helium Systems Inc.
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
 
 #include <stdio.h>
@@ -49,9 +52,9 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
   };
 
   add_queued_callback(&queued);
-  
+
   pthread_cond_signal(&g_callback_cond);
-  
+
   pthread_mutex_lock(&queued.mutex);
   pthread_cond_wait(&queued.cond, &queued.mutex);
   pthread_mutex_unlock(&queued.mutex);
@@ -65,7 +68,7 @@ static VALUE helium_rb_allocate(VALUE klass)
 /*
  * call-seq:
  *    Helium::Connection.new(proxy=nil) { |mac, str| ... } => Helium::Connection
- * 
+ *
  * Open a Helium connection, receiving data with the provided block.
  */
 static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
@@ -94,10 +97,10 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 /*
  * call-seq:
  *    conn.subscribe(mac, token)            => Fixnum
- * 
+ *
  * Subscribe to messages from a given device specified by the MAC address (as a Fixnum)
  * and verified with the provided token (a String)
- * 
+ *
  * Returns an error code, or 0 on success.
  */
 static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
@@ -120,9 +123,9 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 /*
  * call-seq:
  *    conn.send(mac, token, message)            => Fixnum
- * 
+ *
  * Sends the provided +message+ to the Helium device specified by +mac+.
- * 
+ *
  * Returns an error code, or 0 on success.
  */
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
@@ -130,21 +133,21 @@ static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_m
   Check_Type(rb_mac, T_FIXNUM);
   Check_Type(rb_token, T_STRING);
   Check_Type(rb_message, T_STRING);
-  
+
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
-  
+
   uint64_t mac = (uint64_t)NUM2ULL(rb_mac);
   char *token_p = StringValuePtr(rb_token);
   char *msg = StringValuePtr(rb_message);
 
   helium_token_t token;
   memcpy(token, token_p, sizeof(helium_token_t));
-  
+
   size_t msg_len = strlen(msg);
   int result = helium_send(conn, mac, token, (unsigned char*)msg, msg_len);
 
-  
+
   return INT2FIX(result);
 }
 
