@@ -1,4 +1,4 @@
-require_relative 'rbhelium'
+require 'rbhelium'
 require 'base64'
 
 token = Base64.decode64("C8Slmiwm6dreZrUhy5YPiA==")
