@@ -7,7 +7,7 @@ Example
 =======
 
 ```ruby
-require_relative 'rbhelium'
+require 'rbhelium'
 require 'base64'
 
 token = Base64.decode64("helium_token_goes_here")
