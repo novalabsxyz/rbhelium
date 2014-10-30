@@ -10,18 +10,19 @@ Example
 require 'rbhelium'
 require 'base64'
 
-token = Base64.decode64("helium_token_goes_here")
+# A sample Helium token for one of our public devices
+token = Base64.decode64("kdTl6U1w+sR61NBiQjm8sw==")
 
 # Create a connection and associated callback function
-conn = Helium::Connection.new do |mac, datums|
+conn = Helium::Connection.new("r01.sjc.helium.io") do |mac, datums|
   puts "Got data #{datums} from mac #{mac}"
 end
 
-# Subscribe to events from a given MAC address
-conn.subscribe(0x0000112233440001, token)
+# Subscribe to events from a given MAC address, in this case our public device
+conn.subscribe(0x000000fffff00001, token)
 
-# Send data to a device
-conn.write(0x0000112233440001, token, "here's data to send)
+# Send data to the device
+conn.write(0x000000fffff00001, token, "here's data to send)
 ```
 
 Installation
