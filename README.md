@@ -28,9 +28,8 @@ conn.write(0x000000fffff00001, token, "here's data to send)
 Installation
 ============
 
-rbhelium requires Ruby >= 2.0.
+rbhelium requires Ruby >= 2.0. You'll also need [libhelium](https://github.com/helium/libhelium), pthreads, Bundler, and ruby-devel.
 
-0. You'll need libhelium, pthreads, Bundler, and ruby-devel.
 1. `git clone https://github.com/helium/rbhelium.git ; cd rbhelium`
 2. `bundle install`
 
