@@ -37,3 +37,17 @@ If you want to install the gem globally:
 
 3. `gem build rbhelium.gemspec`
 4. `gem install rbhelium-0.0.1.gem`
+
+Troubleshooting
+---------------
+
+If you don't have libhelium installed, you will get this error when building/installing the gem:
+
+```
+[ERROR]: missing `helium`. Aborting.
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+```
+
