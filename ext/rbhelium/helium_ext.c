@@ -43,13 +43,15 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
 {
   struct helium_queued_callback queued = {
     .sender_mac = sender_mac,
-    .message = strndup(message, n),
+    .message = malloc(n),
     .count = n,
     .conn = (helium_connection_t *)conn,
     .mutex = PTHREAD_MUTEX_INITIALIZER,
     .cond = PTHREAD_COND_INITIALIZER,
     .next = NULL
   };
+
+  memcpy(queued.message, message, n);
 
   add_queued_callback(&queued);
 
@@ -111,7 +113,7 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
   Data_Get_Struct(self, helium_connection_t, conn);
 
   uint64_t mac = (uint64_t)NUM2ULL(rb_mac);
-  char *token_p = StringValuePtr(rb_token);
+  char *token_p = RSTRING_PTR(rb_token);
 
   helium_token_t token;
   memcpy(token, token_p, sizeof(helium_token_t));
@@ -138,13 +140,13 @@ static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_m
   Data_Get_Struct(self, helium_connection_t, conn);
 
   uint64_t mac = (uint64_t)NUM2ULL(rb_mac);
-  char *token_p = StringValuePtr(rb_token);
-  char *msg = StringValuePtr(rb_message);
+  char *token_p = RSTRING_PTR(rb_token);
+  char *msg = RSTRING_PTR(rb_message);
 
   helium_token_t token;
   memcpy(token, token_p, sizeof(helium_token_t));
 
-  size_t msg_len = strlen(msg);
+  size_t msg_len = RSTRING_LEN(rb_message);
   int result = helium_send(conn, mac, token, (unsigned char*)msg, msg_len);
 
 
