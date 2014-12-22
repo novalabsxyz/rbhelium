@@ -22,7 +22,7 @@ end
 conn.subscribe(0x000000fffff00001, token)
 
 # Send data to the device
-conn.write(0x000000fffff00001, token, "here's data to send)
+conn.write(0x000000fffff00001, token, "here's data to send")
 ```
 
 Installation
@@ -51,3 +51,4 @@ libraries and/or headers.  Check the mkmf.log file for more details.  You may
 need configuration options.
 ```
 
+Be aware that the callback block runs in a different thread, so for debugging you should set Thread.abort_on_exception=true
