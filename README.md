@@ -38,6 +38,12 @@ If you want to install the gem globally:
 3. `gem build rbhelium.gemspec`
 4. `gem install rbhelium-0.0.1.gem`
 
+Installation of Released rbhelium Gems
+---------------------------------------
+
+We host our gems on [Packagecloud](https://packagecloud.io/helium/libhelium). To install those gems, you can see the Gem section [of the installation page](https://packagecloud.io/helium/libhelium/install).
+
+
 Troubleshooting
 ---------------
 
