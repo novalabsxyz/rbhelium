@@ -11,7 +11,7 @@ require 'rbhelium'
 require 'base64'
 
 # A sample Helium token for one of our public devices
-token = Base64.decode64("kdTl6U1w+sR61NBiQjm8sw==")
+token = Base64.decode64("gLXfMtbHEzto9AfiRfafww==")
 
 # Create a connection and associated callback function
 conn = Helium::Connection.new("r01.sjc.helium.io") do |mac, datums|
