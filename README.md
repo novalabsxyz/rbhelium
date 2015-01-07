@@ -36,7 +36,7 @@ rbhelium requires Ruby >= 2.0. You'll also need [libhelium](https://github.com/h
 If you want to install the gem globally:
 
 3. `gem build rbhelium.gemspec`
-4. `gem install rbhelium-0.0.1.gem`
+4. `gem install rbhelium-0.2.0.gem`
 
 Installation of Released rbhelium Gems
 ---------------------------------------
