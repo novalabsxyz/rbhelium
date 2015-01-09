@@ -6,7 +6,7 @@ def must_have(type, ident)
 end
 
 must_have :header, 'ruby.h'
-must_have :func, 'rb_thread_blocking_region'
+must_have :func, 'rb_thread_call_without_gvl'
 must_have :library, 'pthread'
 must_have :library, 'helium'
 must_have :library, 'crypto'
