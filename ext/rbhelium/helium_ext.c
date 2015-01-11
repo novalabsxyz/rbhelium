@@ -107,7 +107,9 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
  */
 static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 {
-  Check_Type(rb_mac, T_FIXNUM);
+  if (TYPE(rb_mac) != T_FIXNUM && TYPE(rb_mac) != T_BIGNUM) {
+    rb_raise(rb_eTypeError, "expected FixNum or Bignum");
+  }
   Check_Type(rb_token, T_STRING);
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
@@ -132,7 +134,9 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
  */
 static VALUE helium_rb_send(VALUE self, VALUE rb_mac, VALUE rb_token, VALUE rb_message)
 {
-  Check_Type(rb_mac, T_FIXNUM);
+  if (TYPE(rb_mac) != T_FIXNUM && TYPE(rb_mac) != T_BIGNUM) {
+    rb_raise(rb_eTypeError, "expected FixNum or Bignum");
+  }
   Check_Type(rb_token, T_STRING);
   Check_Type(rb_message, T_STRING);
 
