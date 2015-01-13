@@ -62,9 +62,15 @@ void helium_rb_callback(const helium_connection_t *conn, uint64_t sender_mac, ch
   pthread_mutex_unlock(&queued.mutex);
 }
 
+void helium_rb_mark(void * p) {
+  helium_connection_t *conn = (helium_connection_t*)p;
+  // make sure we mark the callback proc too so it doesn't get GCed
+  rb_gc_mark(helium_get_context(conn));
+}
+
 static VALUE helium_rb_allocate(VALUE klass)
 {
-  return Data_Wrap_Struct(klass, NULL, helium_free, helium_alloc());
+  return Data_Wrap_Struct(klass, helium_rb_mark, helium_free, helium_alloc());
 }
 
 /*
@@ -88,8 +94,8 @@ static VALUE helium_rb_initialize(int argc, VALUE *argv, VALUE self)
 
   helium_connection_t *conn = NULL;
   Data_Get_Struct(self, helium_connection_t, conn);
-  RB_GC_GUARD(block);
   helium_set_context(conn, (void *)block);
+  RB_GC_GUARD(block);
 
   helium_open(conn, proxy_addr, helium_rb_callback);
 
