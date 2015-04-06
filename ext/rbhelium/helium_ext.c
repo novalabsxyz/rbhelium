@@ -132,6 +132,28 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 
 /*
  * call-seq:
+ *    conn.subscribe(mac)            => Fixnum
+ *
+ * Unsubscribes from the device specified by the provided mac.
+ *
+ * Returns an error code, or 0 on success.
+ */
+static VALUE helium_rb_unsubscribe(VALUE self, VALUE rb_mac)
+{
+  if (TYPE(rb_mac) != T_FIXNUM && TYPE(rb_mac) != T_BIGNUM) {
+    rb_raise(rb_eTypeError, "expected FixNum or Bignum");
+  }
+  helium_connection_t *conn = NULL;
+  Data_Get_Struct(self, helium_connection_t, conn);
+
+  uint64_t mac = (uint64_t)NUM2ULL(rb_mac);
+
+  int result = helium_unsubscribe(conn, mac);
+  return INT2FIX(result);
+}
+
+/*
+ * call-seq:
  *    conn.send(mac, token, message)            => Fixnum
  *
  * Sends the provided +message+ to the Helium device specified by +mac+.
@@ -246,6 +268,7 @@ void Init_rbhelium()
   rb_define_method(cConnection, "initialize", helium_rb_initialize, -1);
   rb_define_method(cConnection, "write", helium_rb_send, 3);
   rb_define_method(cConnection, "subscribe", helium_rb_subscribe, 2);
+  rb_define_method(cConnection, "unsubscribe", helium_rb_unsubscribe, 1);
   rb_define_method(cConnection, "close", helium_rb_close, 0);
   rb_thread_create(helium_event_thread, NULL);
 }
