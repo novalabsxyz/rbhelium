@@ -132,7 +132,7 @@ static VALUE helium_rb_subscribe(VALUE self, VALUE rb_mac, VALUE rb_token)
 
 /*
  * call-seq:
- *    conn.subscribe(mac)            => Fixnum
+ *    conn.unsubscribe(mac)            => Fixnum
  *
  * Unsubscribes from the device specified by the provided mac.
  *
