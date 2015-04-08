@@ -1,5 +1,6 @@
 require 'rbhelium'
 require 'base64'
+require 'msgpack'
 
 Thread.abort_on_exception = true
 
@@ -13,7 +14,8 @@ puts "subscribing..."
 
 status = conn.subscribe(0x000000fffff00002, token)
 
-conn.write(0x000000fffff00002, token, "hello from ruby #{Process.pid}")
+msg = ("hello from ruby #{Process.pid}").to_msgpack
+conn.write(0x000000fffff00002, token, msg)
 
 puts "status: #{status}"
 
