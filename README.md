@@ -46,7 +46,7 @@ If you want to install the gem globally:
 Installation of Released rbhelium Gems
 ---------------------------------------
 
-We host our gems on [Packagecloud](https://packagecloud.io/helium/libhelium). To install those gems, you can see the Gem section [of the installation page](https://packagecloud.io/helium/libhelium/install).
+We host our gems on [packagecloud.io](https://packagecloud.io/helium/libhelium). To install those gems, you can see the Gem section [of the installation page](https://packagecloud.io/helium/libhelium/install).
 
 
 Troubleshooting
